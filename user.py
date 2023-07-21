@@ -6,7 +6,6 @@ create_connection()
 
 arr = []
 
-
 def get():
     table = Table(title="Products")
     
@@ -26,14 +25,14 @@ def get():
 def order():
     product_id = int(input("Please enter your product id: "))
     quantity = int(input("Please enter your product quantity: "))
-    arr.append((product_id, quantity))
+    arr.append({"product_id": product_id, "quantity": quantity})
     res = create_order(product_id, quantity)
     print(res)
 
 
 def bill_details(orders):
-    products_list = get_products()
     total_price = 0
+    products_list = get_products()
     table = Table(title="Order details")
     columns = ["id", "Name", "Price", "Quantity", "Total Price"]
 
@@ -44,13 +43,9 @@ def bill_details(orders):
         for order in orders:
             if products_list:
                 for product in products_list:
-                    print(product)
-                    print(order)
                     if order["product_id"] == product["id"]:
-                        total_price = total_price + product["price"]
+                        total_price = total_price + (product["price"] * order["quantity"])
                         table.add_row(str(product["id"]), product["name"], str(product["price"]), str(order["quantity"]), "", style='bright_green')
-                console = Console()
-                console.print(table)
             else:
                 print("No Records Found.")
         print(total_price)
@@ -73,7 +68,7 @@ def main():
     get()
     print("1: Create Order")
     print("2: Get Bill")
-    print("3: Product Sales List")
+    print("3: Order history")
     print("4: Quit")
 
     choose = int(input("Enter your choice: "))
