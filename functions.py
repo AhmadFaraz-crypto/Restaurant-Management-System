@@ -106,10 +106,17 @@ def get_products():
     try:
         c = conn.cursor()
         c.execute(product_list)
-        result = c.fetchmany()
+        result = c.fetchall()
         if len(result):
-            result = restructure_data(c, result)
-            return [result]
+            keys = []
+            values = []
+            for i in c.description:
+                for j in i:
+                    if j:
+                        keys.append(j)
+            for j in result:
+                values.append(dict(zip(keys, j)))
+            return values
         else:
             return result
     except Error as e:
@@ -125,22 +132,17 @@ def get_product(id):
         c.execute(get_product, data)
         result = c.fetchone()
         if result:
-            result = restructure_data(c, [result])
+            arr = []
+            for i in c.description:
+                for j in i:
+                    if j:
+                        arr.append(j)
+            result = dict(zip(arr, result))
             return result
         else:
             return result
     except Error as e:
         print(e)
-
-
-def restructure_data(c, result):
-    arr = []
-    for i in c.description:
-        for j in i:
-            if j:
-                arr.append(j)
-    result = dict(zip(arr, *result))
-    return result
 
 
 def create_order(product_id, quantity):
@@ -162,10 +164,17 @@ def get_order_history():
     try:
         c = conn.cursor()
         c.execute(order_history)
-        result = c.fetchmany()
+        result = c.fetchall()
         if len(result):
-            result = restructure_data(c, result)
-            return [result]
+            keys = []
+            values = []
+            for i in c.description:
+                for j in i:
+                    if j:
+                        keys.append(j)
+            for j in result:
+                values.append(dict(zip(keys, j)))
+            return values
         else:
             return result
     except Error as e:

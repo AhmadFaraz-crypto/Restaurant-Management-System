@@ -1,4 +1,6 @@
 from functions import get_products, create_order, create_connection, get_order_history
+from rich.console import Console
+from rich.table import Table
 
 create_connection()
 
@@ -6,43 +8,55 @@ arr = []
 
 
 def get():
+    table = Table(title="Products")
+    
     products_list = get_products()
-    print("---\t----\t\t-----")
-    print("|id\tname\t\tprice|")
-    print("---\t----\t\t-----")
+    columns = ["id", "Name", "Price"]
+    for column in columns:
+        table.add_column(column)
     if products_list:
         for product in products_list:
-            print(f"{product['id']}\t{product['name']}\t{product['price']}")
+            table.add_row(str(product["id"]), product["name"], str(product["price"]), style='bright_green')
+        console = Console()
+        console.print(table)
     else:
         print("No Records Found.")
 
 
 def order():
     product_id = int(input("Please enter your product id: "))
-    quantity = input("Please enter your product quantity: ")
-    arr.append({"product_id": product_id, "quantity": quantity})
+    quantity = int(input("Please enter your product quantity: "))
+    arr.append((product_id, quantity))
     res = create_order(product_id, quantity)
     print(res)
 
 
 def bill_details(orders):
     products_list = get_products()
-    print("---\t----\t\t-----\t--------\t-----------")
-    print("|id\tname\t\tprice\tquantity\tTotal Price|")
-    print("---\t----\t\t-----\t--------\t-----------")
+    total_price = 0
+    table = Table(title="Order details")
+    columns = ["id", "Name", "Price", "Quantity", "Total Price"]
+
+    for column in columns:
+        table.add_column(column)
+
     if len(orders):
         for order in orders:
             if products_list:
                 for product in products_list:
-                    if order['product_id'] == product['id']:
-                        total_price = 0
-                        total_price = total_price + product['price']
-                        print(
-                            f"{product['id']}\t{product['name']}\t{product['price']}\t{order['quantity']}")
-                        print("---\t----\t\t-----\t--------\t-----------")
-                        print(f"\t\t\t\t\t\t {total_price}")
+                    print(product)
+                    print(order)
+                    if order["product_id"] == product["id"]:
+                        total_price = total_price + product["price"]
+                        table.add_row(str(product["id"]), product["name"], str(product["price"]), str(order["quantity"]), "", style='bright_green')
+                console = Console()
+                console.print(table)
             else:
                 print("No Records Found.")
+        print(total_price)
+        table.add_row("", "", "", "", str(total_price), style='bright_red')
+        console = Console()
+        console.print(table)
     else:
         print("No Records Found.")
 

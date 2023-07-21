@@ -1,4 +1,6 @@
 from functions import create_product, get_products, delete_product, update_product, get_product, create_connection
+from rich.console import Console
+from rich.table import Table
 
 create_connection()
 
@@ -10,13 +12,17 @@ def create():
 
 
 def get():
+    table = Table(title="Products")
+    
     products_list = get_products()
-    print("---\t----\t\t-----")
-    print("|id\tname\t\tprice|")
-    print("---\t----\t\t-----")
+    columns = ["id", "Name", "Price"]
+    for column in columns:
+        table.add_column(column)
     if products_list:
         for product in products_list:
-            print(f"{product['id']}\t{product['name']}\t{product['price']}")
+            table.add_row(str(product["id"]), product["name"], str(product["price"]), style='bright_green')
+        console = Console()
+        console.print(table)
     else:
         print("No Records Found.")
 
@@ -44,7 +50,7 @@ def delete(id):
 
 
 def go_back_menu():
-    cont = input("Do you want to continue (y/n)? ")
+    cont = input("\nDo you want to continue (y/n)? ")
     if cont.lower() == 'y':
         main()
     else:
